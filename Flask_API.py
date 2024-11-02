@@ -38,14 +38,19 @@ def check_candle_factors():
             if candle1_volume != 0:
                 factor = candle2_volume / candle1_volume
                 if factor >= FACTOR_THRESHOLD:
-                    coins_list.append(symbol)
+                    coins_list.append({
+                                    "pair": f"{symbole}",
+                                    "pump_by": f"Pump By: {factor}",
+                                    "trade_count1": f"Trade Count: {round(candle1_volume,2)}",
+                                    "trade_count2": f"Trade Count: {round(candle2_volume,2)}"
+                    })
         except Exception as e:
             print(f"Error with symbol {symbol}: {e}")
             continue
 
         time.sleep(0.02)  # To avoid hitting rate limits
     
-    return jsonify({"coins_with_high_factors": coins_list})
+    return jsonify(coins_list)
 
 if __name__ == '__main__':
     app.run(debug=True)
