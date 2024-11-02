@@ -18,7 +18,7 @@ BINANCE_API_URL = "https://api.binance.com/api/v3/klines"
 
 @app.route('/')
 def home():
-    return jsonify({"message": "Hello, World!"})
+    return jsonify({"message": "Hello, World!","Coins":coins})
 
 # API route to check predefined candle factors
 @app.route('/check_candle_factors', methods=['GET'])
