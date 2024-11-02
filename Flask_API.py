@@ -47,7 +47,7 @@ def check_candle_factors():
                 if factor >= FACTOR_THRESHOLD:
                     coins_list.append({
                                     "pair": f"{symbol}",
-                                    "pump_by": f"Pump By: {factor}",
+                                    "pump_by": f"Pump By: {round(factor,2)}",
                                     "trade_count1": f"Trade Count: {round(candle1_volume,2)}",
                                     "trade_count2": f"Trade Count: {round(candle2_volume,2)}"
                     })
