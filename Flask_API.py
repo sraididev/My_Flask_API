@@ -48,8 +48,8 @@ def check_candle_factors():
                     coins_list.append({
                                     "pair": f"{symbol}",
                                     "pump_by": f"Pump By: {round(factor,2)}",
-                                    "trade_count1": f"Trade Count: {round(candle1_volume,2)}",
-                                    "trade_count2": f"Trade Count: {round(candle2_volume,2)}"
+                                    "trade_count1": f"Trade Count: {int(candle1_volume)}",
+                                    "trade_count2": f"Trade Count: {int(candle2_volume)}"
                     })
         except Exception as e:
             print(f"Error with symbol {symbol}: {e}")
