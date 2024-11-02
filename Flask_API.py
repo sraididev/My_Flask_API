@@ -1,61 +1,77 @@
 from flask import Flask, jsonify
-import requests
-import time
-from coins import coins
+import pandas as pd
+from binance.spot import Spot as spot_Client
+
+# url to access binance api
+base_url = "https://api.binance.us"
 
 app = Flask(__name__)
 
-# Predefined parameters
-SYMBOLS = coins #["BTCUSDT", "ETHUSDT", "BNBUSDT"]  # Add more symbols as needed
-INTERVAL = "15m"  # Kline interval (e.g., 3 minutes)
-FACTOR_THRESHOLD = 1.5  # Factor threshold to determine significant change
-LIMIT = 2  # Fixed limit to get the last 2 data points
 
-# Binance API endpoint for Klines
-BINANCE_API_URL = "https://api.binance.com/api/v3/klines"
+def data(coin,frame,limit):
+  # create Client to access API
+  spot_client = spot_Client(base_url=base_url)
+  # Access historical prices
+  data = spot_client.klines(coin, frame, limit=limit)
+  #display(btcusd_history[:2])
 
-@app.route('/coins')
-def home():
-    return jsonify({"message": "Hello, World!","Coins":coins})
+  # show as DataFrame
+  columns=['Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'close_time', 'Quote_V', 'Trades_Count',
+          'taker_buy_base_asset_volume', 'taker_buy_quote_asset_volume', 'ignore']
 
-# API route to check predefined candle factors
+  dff = pd.DataFrame(data, columns=columns)
+  dff['time_ms'] = dff['Date']
+  dff['Date'] = pd.to_datetime(dff['Date'], unit='ms')
+  df = dff.loc[:, ['time_ms','Open','High','Low','Close','Trades_Count','Quote_V','Volume']].copy()
+  df = df.set_index(dff['Date'])
+
+  df = df.loc[:,['Open','High','Low','Close','Quote_V','Trades_Count']]
+  df["Open"] = pd.to_numeric(df["Open"])
+  df['Close'] = pd.to_numeric(df["Close"])
+  df ["High"] = pd.to_numeric(df["High"])
+  df["Low"] = pd.to_numeric(df["Low"])
+  df["Trades_Count"] = pd.to_numeric(df["Trades_Count"])
+  df["Quote_V"] = pd.to_numeric(df["Quote_V"])
+
+  df = df.loc[:,['Open','High','Low','Close','Quote_V','Trades_Count']]
+
+  return df
+
+
+
+# Retrieve all entries
 @app.route('/', methods=['GET'])
-def check_candle_factors():
-    coins_list = []
+def get_entries():
+    #df = data('BTCUSDT','1m',limit=4)
+    #df['V1'] = df['Quote_V'].shift(2)
+    #df['V2'] = df['Quote_V'].shift(1)
+    #df['V_acc'] = df['V2'].div(df['V1'])
 
-    for symbol in SYMBOLS[:50]:  # Limit to the first 50 symbols if needed
-        params = {
-            "symbol": symbol,
-            "interval": INTERVAL,
-            "limit": LIMIT
-        }
-        
-        try:
-            # Make a request to the Binance API
-            response = requests.get(BINANCE_API_URL, params=params)
-            data = response.json()
-            
-            # Volume candles
-            candle1_volume = float(data[0][5])
-            candle2_volume = float(data[1][5])
-            
-            # Calculate Factor and check threshold
-            if candle1_volume != 0:
-                factor = candle2_volume / candle1_volume
-                if factor >= FACTOR_THRESHOLD:
-                    coins_list.append({
-                                    "pair": f"{symbol}",
-                                    "pump_by": f"Pump By: {round(factor,2)}",
-                                    "trade_count1": f"Trade Count: {int(candle1_volume)}",
-                                    "trade_count2": f"Trade Count: {int(candle2_volume)}"
-                    })
-        except Exception as e:
-            print(f"Error with symbol {symbol}: {e}")
-            continue
+    # Sample data
+    entries =[
+    {
+        "pair": "BTCUSDT",
+        "pump_by": "Pump By: 2",
+        "trade_count1": "Trade Count: 10",
+        "trade_count2": "Trade Count: 20"
+    },
+    {
+        "pair": "ETHUSDT",
+        "pump_by": "Pump By: 1.5",
+        "trade_count1": "Trade Count: 15",
+        "trade_count2": "Trade Count: 25"
+    },
+    {
+        "pair": "SOLUSDT",
+        "pump_by": "Pump By: 3",
+        "trade_count1": "Trade Count: 30",
+        "trade_count2": "Trade Count: 90"
+    }
+]
 
-        time.sleep(0.02)  # To avoid hitting rate limits
-    
-    return jsonify(coins_list)
+    return jsonify(entries)
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
