@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 import requests
 import time
-import coins
+from coins import coins
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
