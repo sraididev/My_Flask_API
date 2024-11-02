@@ -1,11 +1,12 @@
 from flask import Flask, jsonify
 import requests
 import time
+import coins
 
 app = Flask(__name__)
 
 # Predefined parameters
-SYMBOLS = ["BTCUSDT", "ETHUSDT", "BNBUSDT"]  # Add more symbols as needed
+SYMBOLS = coins #["BTCUSDT", "ETHUSDT", "BNBUSDT"]  # Add more symbols as needed
 INTERVAL = "3m"  # Kline interval (e.g., 3 minutes)
 FACTOR_THRESHOLD = 1.5  # Factor threshold to determine significant change
 LIMIT = 2  # Fixed limit to get the last 2 data points
