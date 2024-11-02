@@ -16,12 +16,12 @@ LIMIT = 2  # Fixed limit to get the last 2 data points
 # Binance API endpoint for Klines
 BINANCE_API_URL = "https://api.binance.com/api/v3/klines"
 
-@app.route('/')
+@app.route('/coins')
 def home():
     return jsonify({"message": "Hello, World!","Coins":coins})
 
 # API route to check predefined candle factors
-@app.route('/check_candle_factors', methods=['GET'])
+@app.route('/', methods=['GET'])
 def check_candle_factors():
     coins_list = []
 
