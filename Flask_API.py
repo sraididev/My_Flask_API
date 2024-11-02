@@ -4,8 +4,6 @@ import time
 from coins import coins
 
 app = Flask(__name__)
-app.config["DEBUG"] = True
-
 
 # Predefined parameters
 SYMBOLS = coins #["BTCUSDT", "ETHUSDT", "BNBUSDT"]  # Add more symbols as needed
