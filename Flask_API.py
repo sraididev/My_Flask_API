@@ -19,7 +19,7 @@ def home():
     return jsonify({"message": "Hello, World!","Coins":coins})
 
 # API route to check predefined candle factors
-@app.route('/', methods=['GET'])
+@app.route('/start', methods=['GET'])
 def check_candle_factors():
     coins_list = []
 
